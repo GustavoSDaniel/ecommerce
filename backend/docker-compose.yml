@@ -1,0 +1,64 @@
+services:
+  db-ecommerce:
+    image: postgres:17-alpine
+    container_name: db-ecommerce
+    environment:
+      # As variáveis agora são lidas do arquivo .env
+      # Isso evita expor informações sensíveis no controle de versão.
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5051:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - ecommerce-network
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.3.3
+    container_name: keycloak
+    environment:
+      KC_DB: postgres
+      KC_DB_URL_HOST: db-keycloak
+      KC_DB_URL_DATABASE: ${KEYCLOAK_DB}
+      KC_DB_USERNAME: ${KEYCLOAK_USER_DB}
+      KC_DB_PASSWORD: ${KEYCLOAK_PASSWORD_DB}
+
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+    command:
+      - start-dev
+    ports:
+      - "5052:8080"
+    depends_on:
+      - db-keycloak
+    networks:
+      - ecommerce-network
+
+
+  db-keycloak:
+    image: postgres:17-alpine
+    container_name: db-keycloak
+    environment:
+      POSTGRES_USER: ${KEYCLOAK_USER_DB}
+      POSTGRES_PASSWORD: ${KEYCLOAK_PASSWORD_DB}
+      POSTGRES_DB: ${KEYCLOAK_DB}
+    ports:
+      - "5053:5432"
+    volumes:
+      - keycloak_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - ecommerce-network
+
+networks:
+  ecommerce-network:
+    driver: bridge
+
+
+volumes:
+  postgres_data:
+  keycloak_data:
+    driver: local
