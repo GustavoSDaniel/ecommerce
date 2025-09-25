@@ -4,9 +4,9 @@ import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 
 @Mapper(componentModel = "spring", unmappedSourcePolicy = ReportingPolicy.IGNORE)
-public interface CategoryEvent {
+public interface CategoryMapper {
 
     Category toCategory(CategoryResponse categoryResponse);
 
-    CategoryResponse toCategoryDTO(Category category);
+    CategoryResponse toCategoryResponse(Category category);
 }
