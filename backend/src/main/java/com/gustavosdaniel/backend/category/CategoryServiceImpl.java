@@ -1,14 +1,18 @@
 package com.gustavosdaniel.backend.category;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+
 @Service
 public class CategoryServiceImpl implements CategoryService {
 
+    private static final Logger log = LoggerFactory.getLogger(CategoryServiceImpl.class);
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
 
@@ -27,7 +31,11 @@ public class CategoryServiceImpl implements CategoryService {
 
         categoryRepository.save(newCategory);
 
+        log.info("Categoria {} criado com sucesso", newCategory);
+
         return categoryMapper.toCategoryResponse(newCategory);
+
+
     }
 
     @Override
