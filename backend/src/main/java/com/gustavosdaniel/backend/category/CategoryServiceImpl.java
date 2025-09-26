@@ -6,9 +6,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
-
 @Service
 public class CategoryServiceImpl implements CategoryService {
 
@@ -22,7 +19,13 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public CategoryResponse createdCategory(CategoryRequest categoryRequest) {
+    public CategoryResponse createdCategory(CategoryRequest categoryRequest) throws ExceptionCategoryNameExists {
+
+        if (categoryRepository.existsByName(categoryRequest.name())) {
+            throw new ExceptionCategoryNameExists();
+        }
+
+        log.warn("Tentativa de criar categoria com nome duplicado {}", categoryRequest.name());
 
         Category newCategory = new Category();
         newCategory.setName(categoryRequest.name());
@@ -35,7 +38,6 @@ public class CategoryServiceImpl implements CategoryService {
 
         return categoryMapper.toCategoryResponse(newCategory);
 
-
     }
 
     @Override
@@ -46,4 +48,5 @@ public class CategoryServiceImpl implements CategoryService {
         return allCategorias.map(categoryMapper::toCategoryResponse);
 
     }
+
 }

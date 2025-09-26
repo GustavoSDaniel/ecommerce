@@ -5,6 +5,7 @@ spring:
   application:
     name: backend
 
+
   datasource:
     url: jdbc:postgresql://db-ecommerce:5432/${POSTGRES_DB}
     username: ${POSTGRES_USER}
@@ -26,6 +27,8 @@ spring:
         jwt:
           # !! IMPORTANTE: Lembre-se de substituir 'seu-realm' pelo nome do seu realm no Keycloak !!
           issuer-uri: http://keycloak:8080/realms/seu-realm
+  jackson:
+    time-zone: America/Sao_Paulo
 
 # http://localhost:5055/swagger-ui.html
 springdoc:

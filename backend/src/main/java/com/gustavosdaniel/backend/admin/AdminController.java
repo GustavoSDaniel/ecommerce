@@ -1,8 +1,8 @@
 package com.gustavosdaniel.backend.admin;
 
-import com.gustavosdaniel.backend.category.Category;
-import com.gustavosdaniel.backend.category.CategoryRepository;
+import com.gustavosdaniel.backend.category.*;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,17 +11,17 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/admin")
 public class AdminController {
 
-    private final CategoryRepository categoryRepository;
+    private final CategoryService categoryService;
 
-    public AdminController(CategoryRepository categoryRepository) {
-        this.categoryRepository = categoryRepository;
+    public AdminController(CategoryService categoryService) {
+        this.categoryService = categoryService;
     }
 
-    @PostMapping("/saveCategory")
+    @PostMapping("/createCategory")
     @Operation(summary = "Criando category")
-    public ResponseEntity<Category> createdCategory(@RequestBody Category category) {
+    public ResponseEntity<CategoryResponse> createdCategory(@Valid @RequestBody CategoryRequest categoryRequest) throws ExceptionCategoryNameExists {
 
-        Category savaCategory = categoryRepository.save(category);
+        CategoryResponse savaCategory = categoryService.createdCategory(categoryRequest);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(savaCategory);
     }

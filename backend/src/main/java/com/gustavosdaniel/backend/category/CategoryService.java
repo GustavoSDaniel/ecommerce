@@ -7,7 +7,8 @@ import java.util.List;
 
 public interface CategoryService {
 
-    CategoryResponse createdCategory(CategoryRequest categoryRequest);
+    CategoryResponse createdCategory(CategoryRequest categoryRequest) throws ExceptionCategoryNameExists;
 
     Page<CategoryResponse> getAllCategories(Pageable pageable);
+
 }
