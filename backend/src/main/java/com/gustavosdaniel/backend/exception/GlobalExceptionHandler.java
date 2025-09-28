@@ -1,6 +1,7 @@
 package com.gustavosdaniel.backend.exception;
 
 import com.gustavosdaniel.backend.category.ExceptionCategoryNameExists;
+import com.gustavosdaniel.backend.image.ExceptionErrorUploadImage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -48,5 +49,18 @@ public class GlobalExceptionHandler {
                 null);
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+    }
+
+    @ExceptionHandler(ExceptionErrorUploadImage.class)
+    public ResponseEntity<ErrorResponse> handleExceptionErrorUploadImage(
+            ExceptionErrorUploadImage exception
+    ){
+        ErrorResponse errorResponse = new ErrorResponse("Erro ao carregar imagem",
+                exception.getMessage(),
+                LocalDateTime.now(),
+                null);
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+
     }
 }

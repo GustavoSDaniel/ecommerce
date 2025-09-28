@@ -1,6 +1,7 @@
 package com.gustavosdaniel.backend.category;
 
 import jakarta.validation.constraints.NotBlank;
+import org.springframework.web.multipart.MultipartFile;
 
 public record CategoryRequest(
 
@@ -8,7 +9,7 @@ public record CategoryRequest(
         String name,
 
         @NotBlank(message = "Image is required")
-        String imageName,
+        MultipartFile imageName,
 
         Boolean isActive
 ) {
