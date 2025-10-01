@@ -35,7 +35,7 @@ public class CategoryController {
         return ResponseEntity.ok(allCategorya);
     }
 
-    @GetMapping
+    @GetMapping("/search")
     @Operation(summary = "Pesquisando por categoria")
     public ResponseEntity<List<CategorySearchResponse>> searchCategoria(@RequestParam String name) {
 

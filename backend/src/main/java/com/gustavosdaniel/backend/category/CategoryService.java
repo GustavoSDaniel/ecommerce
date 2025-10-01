@@ -21,6 +21,6 @@ public interface CategoryService {
     CategoryUpdateResponse updateCategory(Integer id,String name, boolean isActive, MultipartFile imageFile)
             throws CategoryNotFoundException, IOException, ErrorValidateImage, ExceptionCategoryNameExists;
 
-    void deleteCategory(String name);
+    void deleteCategory(Integer id);
 
 }

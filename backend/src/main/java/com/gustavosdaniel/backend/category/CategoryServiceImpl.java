@@ -122,14 +122,14 @@ public class CategoryServiceImpl implements CategoryService {
 
 
     @Override
-    public void deleteCategory(String name) {
+    public void deleteCategory(Integer id) {
 
-        Category categoryDeleted = categoryRepository.findByName(name)
+        Category categoryDeleted = categoryRepository.findById(id)
                 .orElseThrow(CategoryNotFoundException::new);
 
         categoryRepository.delete(categoryDeleted);
 
-        log.info("Categoria '{}' deletada com sucesso.", name);
+        log.info("Categoria '{}' deletada com sucesso.", id);
 
     }
 

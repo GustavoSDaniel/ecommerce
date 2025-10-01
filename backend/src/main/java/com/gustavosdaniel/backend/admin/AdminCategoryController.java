@@ -52,10 +52,10 @@ public class AdminCategoryController {
         return ResponseEntity.status(HttpStatus.OK).body(updateCategory);
     }
 
-    @DeleteMapping("/{name}")
+    @DeleteMapping("/{id}")
     @Operation(summary = "Apagando categoria")
-    public ResponseEntity<Void> deleteCategory(@PathVariable String name) {
-        categoryService.deleteCategory(name);
+    public ResponseEntity<Void> deleteCategory(@PathVariable Integer id) {
+        categoryService.deleteCategory(id);
         return ResponseEntity.noContent().build();
     }
 }
