@@ -2,6 +2,7 @@ package com.gustavosdaniel.backend.category;
 
 import com.gustavosdaniel.backend.image.ErrorValidateImage;
 import com.gustavosdaniel.backend.image.ImageService;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -10,6 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
@@ -26,6 +30,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Transactional
     public CategoryResponse createdCategory(String name, boolean isActive, MultipartFile imageFile)
             throws ExceptionCategoryNameExists, IOException, ErrorValidateImage {
 
@@ -61,6 +66,31 @@ public class CategoryServiceImpl implements CategoryService {
         Page<Category> allCategorias = categoryRepository.findAll(pageable);
 
         return allCategorias.map(categoryMapper::toCategoryResponse);
+
+    }
+
+    @Override
+    public List<CategoryResponse> searchCategoria(String name) {
+
+        List<Category> searchCategory = categoryRepository.searchByName(name);
+
+        if (searchCategory.isEmpty()) {
+            throw new CategoryNotFoundException();
+        }
+
+        return searchCategory.stream().map(categoryMapper::toCategoryResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void deleteCategory(String name) {
+
+        Category categoryDeleted = categoryRepository.findByName(name)
+                .orElseThrow(CategoryNotFoundException::new);
+
+        categoryRepository.delete(categoryDeleted);
+
+        log.info("Categoria '{}' deletada com sucesso.", name);
 
     }
 

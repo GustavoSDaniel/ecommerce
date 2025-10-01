@@ -1,5 +1,6 @@
 package com.gustavosdaniel.backend.exception;
 
+import com.gustavosdaniel.backend.category.CategoryNotFoundException;
 import com.gustavosdaniel.backend.category.ExceptionCategoryNameExists;
 import com.gustavosdaniel.backend.image.ExceptionErrorUploadImage;
 import org.slf4j.Logger;
@@ -43,7 +44,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleExceptionCategoryNameExists(
             ExceptionCategoryNameExists exception
     ){
-        ErrorResponse errorResponse = new ErrorResponse("Noome da Categoria Já existe",
+        ErrorResponse errorResponse = new ErrorResponse("Nome da Categoria Já existe",
                 "O nome da categoria informado já está sendo utilizado",
                 LocalDateTime.now(),
                 null);
@@ -62,5 +63,15 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
 
+    }
+
+    @ExceptionHandler(CategoryNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleCategoryNotFoundException(
+            CategoryNotFoundException  exception) {
+        ErrorResponse errorResponse = new ErrorResponse("Categoria não encontrada",
+                "Não foi possivel deletar a categoria pois com esse nome não foi encontrada",
+                LocalDateTime.now(),
+                null);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 }

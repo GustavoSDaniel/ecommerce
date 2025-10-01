@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/categories")
 public class CategoryController {
@@ -31,5 +33,14 @@ public class CategoryController {
         Page<CategoryResponse> allCategorya = categoryService.getAllCategories(pageable);
 
         return ResponseEntity.ok(allCategorya);
+    }
+
+    @GetMapping
+    @Operation(summary = "Pesquisando por categoria")
+    public ResponseEntity<List<CategoryResponse>> searchCategoria(@RequestParam String name) {
+
+        List<CategoryResponse> categorySearch = categoryService.searchCategoria(name);
+
+        return ResponseEntity.ok(categorySearch);
     }
 }
