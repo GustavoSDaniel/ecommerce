@@ -11,11 +11,15 @@ import java.util.Optional;
 
 public interface CategoryService {
 
-    CategoryResponse createdCategory(String name, boolean isActive, MultipartFile imageFile) throws ExceptionCategoryNameExists, IOException, ErrorValidateImage;
+    CategoryCreatedResponse createdCategory(String name, boolean isActive, MultipartFile imageFile)
+            throws ExceptionCategoryNameExists, IOException, ErrorValidateImage;
 
-    Page<CategoryResponse> getAllCategories(Pageable pageable);
+    Page<CategoryCreatedResponse> getAllCategories(Pageable pageable);
 
-    List<CategoryResponse> searchCategoria(String name);
+    List<CategorySearchResponse> searchCategoria(String name);
+
+    CategoryUpdateResponse updateCategory(Integer id,String name, boolean isActive, MultipartFile imageFile)
+            throws CategoryNotFoundException, IOException, ErrorValidateImage, ExceptionCategoryNameExists;
 
     void deleteCategory(String name);
 

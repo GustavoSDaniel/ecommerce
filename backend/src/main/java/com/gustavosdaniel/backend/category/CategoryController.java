@@ -24,22 +24,22 @@ public class CategoryController {
 
     @GetMapping
     @Operation(summary = "Get all category")
-    public ResponseEntity<Page<CategoryResponse>> getAllCategories(
+    public ResponseEntity<Page<CategoryCreatedResponse>> getAllCategories(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "20") int size) {
 
         Pageable pageable = PageRequest.of(page -1, size);
 
-        Page<CategoryResponse> allCategorya = categoryService.getAllCategories(pageable);
+        Page<CategoryCreatedResponse> allCategorya = categoryService.getAllCategories(pageable);
 
         return ResponseEntity.ok(allCategorya);
     }
 
     @GetMapping
     @Operation(summary = "Pesquisando por categoria")
-    public ResponseEntity<List<CategoryResponse>> searchCategoria(@RequestParam String name) {
+    public ResponseEntity<List<CategorySearchResponse>> searchCategoria(@RequestParam String name) {
 
-        List<CategoryResponse> categorySearch = categoryService.searchCategoria(name);
+        List<CategorySearchResponse> categorySearch = categoryService.searchCategoria(name);
 
         return ResponseEntity.ok(categorySearch);
     }

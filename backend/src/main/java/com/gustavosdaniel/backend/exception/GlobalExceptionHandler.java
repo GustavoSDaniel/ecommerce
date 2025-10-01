@@ -69,7 +69,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleCategoryNotFoundException(
             CategoryNotFoundException  exception) {
         ErrorResponse errorResponse = new ErrorResponse("Categoria não encontrada",
-                "Não foi possivel deletar a categoria pois com esse nome não foi encontrada",
+                "Não foi possivel encontrar uma categoria",
                 LocalDateTime.now(),
                 null);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);

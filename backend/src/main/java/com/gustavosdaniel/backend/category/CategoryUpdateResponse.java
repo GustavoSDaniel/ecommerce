@@ -1,6 +1,6 @@
 package com.gustavosdaniel.backend.category;
 
-public record CategoryResponse(
+public record CategoryUpdateResponse(
 
         Integer id,
         String name,

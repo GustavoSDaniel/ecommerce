@@ -31,7 +31,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
-    public CategoryResponse createdCategory(String name, boolean isActive, MultipartFile imageFile)
+    public CategoryCreatedResponse createdCategory(String name, boolean isActive, MultipartFile imageFile)
             throws ExceptionCategoryNameExists, IOException, ErrorValidateImage {
 
         if (categoryRepository.existsByName(name)) {
@@ -43,7 +43,7 @@ public class CategoryServiceImpl implements CategoryService {
 
         if (imageFile != null && !imageFile.isEmpty()){
             imageName = imageService.uploadImage(
-                    imageFile, "categories", name);
+                    imageFile, "Categories", name);
             log.info("Criando categoria com sucesso: {}", imageName);
         }
 
@@ -61,7 +61,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Page<CategoryResponse> getAllCategories(Pageable pageable) {
+    public Page<CategoryCreatedResponse> getAllCategories(Pageable pageable) {
 
         Page<Category> allCategorias = categoryRepository.findAll(pageable);
 
@@ -70,7 +70,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<CategoryResponse> searchCategoria(String name) {
+    public List<CategorySearchResponse> searchCategoria(String name) {
 
         List<Category> searchCategory = categoryRepository.searchByName(name);
 
@@ -78,9 +78,48 @@ public class CategoryServiceImpl implements CategoryService {
             throw new CategoryNotFoundException();
         }
 
-        return searchCategory.stream().map(categoryMapper::toCategoryResponse)
+        return searchCategory.stream().map(categoryMapper::toCategorySearchResponse)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    @Transactional
+    public CategoryUpdateResponse updateCategory(
+            Integer id, String newName, boolean isActive, MultipartFile imageFile)
+            throws CategoryNotFoundException, IOException, ErrorValidateImage, ExceptionCategoryNameExists {
+
+        Category existingCategory = categoryRepository.findById(id)
+                .orElseThrow(CategoryNotFoundException::new);
+
+        Optional<Category> categoryWhitNewName = categoryRepository.findByName(newName);
+
+        if (categoryWhitNewName.isPresent() && !categoryWhitNewName.get().getId().equals(id)) {
+            throw new ExceptionCategoryNameExists();
+        }
+
+        String imagemAntiga = existingCategory.getImageName();
+        String newImage = imagemAntiga;
+
+        if (imageFile != null && !imageFile.isEmpty()){
+            newImage = imageService.uploadImage(
+                    imageFile, "Categories", newName );
+        }
+
+        existingCategory.setName(newName);
+        existingCategory.setImageName(newImage);
+        existingCategory.setActive(isActive);
+
+        Category updatedCategory = categoryRepository.save(existingCategory);
+
+        log.info("Categoria {} atualizada com sucesso", updatedCategory.getName());
+
+        if (newImage != null && !newImage.equals(imagemAntiga) && imagemAntiga != null) {
+            imageService.deleteImage(imagemAntiga, "Categories");
+        }
+
+        return categoryMapper.toCategoryUpdateResponse(updatedCategory);
+    }
+
 
     @Override
     public void deleteCategory(String name) {
