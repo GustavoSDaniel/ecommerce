@@ -25,7 +25,7 @@ public class AdminCategoryController {
     @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
     @Operation(summary = "Criando category")
     public ResponseEntity<CategoryCreatedResponse> createdCategory(
-            @Valid @RequestPart("imageFile")CategoryRequest categoryRequest, MultipartFile imageFile)
+            @Valid CategoryRequest categoryRequest, @RequestPart("imageFile")MultipartFile imageFile)
             throws ExceptionCategoryNameExists, IOException, ErrorValidateImage {
 
         CategoryCreatedResponse savaCategory =
@@ -37,21 +37,20 @@ public class AdminCategoryController {
     @PutMapping(value = "/{id}", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
     @Operation(summary = "Atualizando categoria")
     public ResponseEntity<CategoryUpdateResponse> updateCategory(
-            @PathVariable Integer id,
-            @RequestParam("name") String name,
-            @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
-            @RequestParam("isActive") boolean isActive) throws ExceptionCategoryNameExists,
+            @PathVariable String id,
+            @Valid CategoryRequest categoryRequest, @RequestPart("imageFile")MultipartFile imageFile)
+            throws ExceptionCategoryNameExists,
             IOException, ErrorValidateImage {
 
         CategoryUpdateResponse updateCategory = categoryService
-                .updateCategory(id, name, isActive, imageFile);
+                .updateCategory(id, categoryRequest, imageFile);
 
         return ResponseEntity.status(HttpStatus.OK).body(updateCategory);
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Apagando categoria")
-    public ResponseEntity<Void> deleteCategory(@PathVariable Integer id) {
+    public ResponseEntity<Void> deleteCategory(@PathVariable String id) {
         categoryService.deleteCategory(id);
         return ResponseEntity.noContent().build();
     }

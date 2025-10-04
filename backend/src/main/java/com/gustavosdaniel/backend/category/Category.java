@@ -1,5 +1,6 @@
 package com.gustavosdaniel.backend.category;
 
+import com.gustavosdaniel.backend.commun.ActiveOrInactive;
 import com.gustavosdaniel.backend.product.Product;
 import jakarta.persistence.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -17,15 +18,17 @@ public class Category {
     public Category() {
     }
 
-    public Category(String name, String imageName, Boolean isActive) {
+    public Category(String id, String name, String imageName, ActiveOrInactive isActive, List<Product> products) {
+        this.id = id;
         this.name = name;
         this.imageName = imageName;
         this.isActive = isActive;
+        this.products = products;
     }
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Integer id;
+    private String id;
 
     @Column(unique = true, nullable = false)
     private String name;
@@ -33,7 +36,8 @@ public class Category {
     @Column(unique = true, nullable = false)
     private String imageName;
 
-    private Boolean isActive;
+    @Enumerated(EnumType.STRING)
+    private ActiveOrInactive isActive;
 
     @OneToMany(mappedBy =  "category", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     private List<Product> products;
@@ -46,7 +50,7 @@ public class Category {
     @Column(name = "update_at", insertable = false)
     private LocalDateTime updatedAt;
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
@@ -66,9 +70,6 @@ public class Category {
         this.imageName = imageName;
     }
 
-    public Boolean getActive() {
-        return isActive;
-    }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
@@ -83,9 +84,6 @@ public class Category {
         this.updatedAt = updatedAt;
     }
 
-    public void setActive(Boolean active) {
-        isActive = active;
-    }
 
     public List<Product> getProducts() {
         return products;
@@ -93,6 +91,14 @@ public class Category {
 
     public void setProducts(List<Product> products) {
         this.products = products;
+    }
+
+    public ActiveOrInactive getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(ActiveOrInactive isActive) {
+        this.isActive = isActive;
     }
 
     @Override

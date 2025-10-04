@@ -50,7 +50,7 @@ public class CategoryServiceImpl implements CategoryService {
         Category newCategory = new Category();
         newCategory.setName(categoryRequest.name());
         newCategory.setImageName(imageName);
-        newCategory.setActive(categoryRequest.isActive());
+        newCategory.setIsActive(categoryRequest.isActive());
 
         Category salvedCategory = categoryRepository.save(newCategory);
 
@@ -85,13 +85,13 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public CategoryUpdateResponse updateCategory(
-            Integer id, String newName, boolean isActive, MultipartFile imageFile)
+            String id, CategoryRequest categoryRequest, MultipartFile imageFile)
             throws CategoryNotFoundException, IOException, ErrorValidateImage, ExceptionCategoryNameExists {
 
-        Category existingCategory = categoryRepository.findById(id)
+        Category existingCategory = categoryRepository.findById(categoryRequest.name())
                 .orElseThrow(CategoryNotFoundException::new);
 
-        Optional<Category> categoryWhitNewName = categoryRepository.findByName(newName);
+        Optional<Category> categoryWhitNewName = categoryRepository.findByName(categoryRequest.name());
 
         if (categoryWhitNewName.isPresent() && !categoryWhitNewName.get().getId().equals(id)) {
             throw new ExceptionCategoryNameExists();
@@ -102,12 +102,12 @@ public class CategoryServiceImpl implements CategoryService {
 
         if (imageFile != null && !imageFile.isEmpty()){
             newImage = imageService.uploadImage(
-                    imageFile, "Categories", newName );
+                    imageFile, "Categories", categoryRequest.name() );
         }
 
-        existingCategory.setName(newName);
+        existingCategory.setName(categoryRequest.name());
         existingCategory.setImageName(newImage);
-        existingCategory.setActive(isActive);
+        existingCategory.setIsActive(categoryRequest.isActive());
 
         Category updatedCategory = categoryRepository.save(existingCategory);
 
@@ -122,7 +122,7 @@ public class CategoryServiceImpl implements CategoryService {
 
 
     @Override
-    public void deleteCategory(Integer id) {
+    public void deleteCategory(String id) {
 
         Category categoryDeleted = categoryRepository.findById(id)
                 .orElseThrow(CategoryNotFoundException::new);

@@ -1,6 +1,7 @@
 package com.gustavosdaniel.backend.product;
 
 import com.gustavosdaniel.backend.category.Category;
+import com.gustavosdaniel.backend.commun.ActiveOrInactive;
 import jakarta.persistence.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -14,9 +15,23 @@ import java.util.Objects;
 @EntityListeners(AuditingEntityListener.class)
 public class Product {
 
+    public Product() {
+
+    }
+
+    public Product(String name, String description, BigDecimal price, Integer stock, String imageName, ActiveOrInactive activeOrInactive, Category category) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.stock = stock;
+        this.imageName = imageName;
+        this.activeOrInactive = activeOrInactive;
+        this.category = category;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Integer id;
+    private String id;
 
     @Column(unique = true, nullable = false)
     private String name;
@@ -33,6 +48,10 @@ public class Product {
     @Column(unique = true, nullable = false)
     private String imageName;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ActiveOrInactive activeOrInactive;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
@@ -45,7 +64,8 @@ public class Product {
     @Column(name = "update_at", insertable = false)
     private LocalDateTime updatedAt;
 
-    public Integer getId() {
+
+    public String getId() {
         return id;
     }
 
@@ -108,6 +128,14 @@ public class Product {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public ActiveOrInactive getActiveOrInactive() {
+        return activeOrInactive;
+    }
+
+    public void setActiveOrInactive(ActiveOrInactive activeOrInactive) {
+        this.activeOrInactive = activeOrInactive;
     }
 
     @Override

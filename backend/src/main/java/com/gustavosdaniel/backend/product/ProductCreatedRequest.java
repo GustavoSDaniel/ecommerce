@@ -1,6 +1,7 @@
 package com.gustavosdaniel.backend.product;
 
 import com.gustavosdaniel.backend.category.Category;
+import com.gustavosdaniel.backend.commun.ActiveOrInactive;
 import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
@@ -22,7 +23,10 @@ public record ProductCreatedRequest(
         @PositiveOrZero(message = "O estoque não pode ser negativo")
         Integer stock,
 
+        @NotNull(message = "O status ativo/inativo é obrigatório")
+        ActiveOrInactive activeOrInactive,
+
         @NotNull(message = "O ID da categoria é obrigatória")
-        Integer categoryId
+        String categoryId
 ) {
 }

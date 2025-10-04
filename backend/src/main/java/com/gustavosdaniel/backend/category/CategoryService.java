@@ -7,7 +7,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 public interface CategoryService {
 
@@ -18,9 +17,9 @@ public interface CategoryService {
 
     List<CategorySearchResponse> searchCategoria(String name);
 
-    CategoryUpdateResponse updateCategory(Integer id,String name, boolean isActive, MultipartFile imageFile)
+    CategoryUpdateResponse updateCategory(String id, CategoryRequest categoryRequest, MultipartFile imageFile)
             throws CategoryNotFoundException, IOException, ErrorValidateImage, ExceptionCategoryNameExists;
 
-    void deleteCategory(Integer id);
+    void deleteCategory(String id);
 
 }

@@ -1,5 +1,6 @@
 package com.gustavosdaniel.backend.category;
 
+import com.gustavosdaniel.backend.commun.ActiveOrInactive;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -11,6 +12,6 @@ public record CategoryRequest(
         String name,
 
         @NotNull(message = "O status ativo/inativo é obrigatório")
-        Boolean isActive
+        ActiveOrInactive isActive
 ) {
 }
