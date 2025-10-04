@@ -1,11 +1,9 @@
 package com.gustavosdaniel.backend.admin;
 
-import com.gustavosdaniel.backend.category.CategoryCreatedResponse;
-import com.gustavosdaniel.backend.category.CategoryService;
-import com.gustavosdaniel.backend.category.CategoryUpdateResponse;
-import com.gustavosdaniel.backend.category.ExceptionCategoryNameExists;
+import com.gustavosdaniel.backend.category.*;
 import com.gustavosdaniel.backend.image.ErrorValidateImage;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -27,12 +25,11 @@ public class AdminCategoryController {
     @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
     @Operation(summary = "Criando category")
     public ResponseEntity<CategoryCreatedResponse> createdCategory(
-            @RequestParam("name") String name,
-            @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
-            @RequestParam("isActive") boolean isActive)
+            @Valid @RequestPart("imageFile")CategoryRequest categoryRequest, MultipartFile imageFile)
             throws ExceptionCategoryNameExists, IOException, ErrorValidateImage {
 
-        CategoryCreatedResponse savaCategory = categoryService.createdCategory(name, isActive, imageFile);
+        CategoryCreatedResponse savaCategory =
+                categoryService.createdCategory(categoryRequest,imageFile );
 
         return ResponseEntity.status(HttpStatus.CREATED).body(savaCategory);
     }

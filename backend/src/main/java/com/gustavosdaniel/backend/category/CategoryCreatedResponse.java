@@ -6,6 +6,7 @@ public record CategoryCreatedResponse(
 
         Integer id,
         String name,
-        MultipartFile imageName
+        MultipartFile imageName,
+        Boolean isActive
 ) {
 }

@@ -31,11 +31,11 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
-    public CategoryCreatedResponse createdCategory(String name, boolean isActive, MultipartFile imageFile)
+    public CategoryCreatedResponse createdCategory(CategoryRequest categoryRequest, MultipartFile imageFile)
             throws ExceptionCategoryNameExists, IOException, ErrorValidateImage {
 
-        if (categoryRepository.existsByName(name)) {
-            log.warn("Tentativa de criar categoria com nome duplicado {}", name);
+        if (categoryRepository.existsByName(categoryRequest.name())) {
+            log.warn("Tentativa de criar categoria com nome duplicado {}", categoryRequest.name());
             throw new ExceptionCategoryNameExists();
         }
 
@@ -43,20 +43,20 @@ public class CategoryServiceImpl implements CategoryService {
 
         if (imageFile != null && !imageFile.isEmpty()){
             imageName = imageService.uploadImage(
-                    imageFile, "Categories", name);
-            log.info("Criando categoria com sucesso: {}", imageName);
+                    imageFile, "Categories", categoryRequest.name());
+            log.info("Imagem da categoria carregada com sucesso: {}", imageName);
         }
 
         Category newCategory = new Category();
-        newCategory.setName(name);
+        newCategory.setName(categoryRequest.name());
         newCategory.setImageName(imageName);
-        newCategory.setActive(isActive);
+        newCategory.setActive(categoryRequest.isActive());
 
-        categoryRepository.save(newCategory);
+        Category salvedCategory = categoryRepository.save(newCategory);
 
         log.info("Categoria {} criado com sucesso", newCategory);
 
-        return categoryMapper.toCategoryResponse(newCategory);
+        return categoryMapper.toCategoryResponse(salvedCategory);
 
     }
 

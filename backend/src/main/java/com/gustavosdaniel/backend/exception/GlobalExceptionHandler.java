@@ -3,6 +3,7 @@ package com.gustavosdaniel.backend.exception;
 import com.gustavosdaniel.backend.category.CategoryNotFoundException;
 import com.gustavosdaniel.backend.category.ExceptionCategoryNameExists;
 import com.gustavosdaniel.backend.image.ExceptionErrorUploadImage;
+import com.gustavosdaniel.backend.product.ExceptionProductNameExists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -73,5 +74,16 @@ public class GlobalExceptionHandler {
                 LocalDateTime.now(),
                 null);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+
+    @ExceptionHandler(ExceptionProductNameExists.class)
+    public ResponseEntity<ErrorResponse> handleExceptionProductNameExists(
+            ExceptionProductNameExists exception) {
+        ErrorResponse errorResponse = new ErrorResponse("Nome do produto já existe",
+                "O nome do Produto informado já está sendo utilizado",
+                LocalDateTime.now(),
+                null);
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
     }
 }

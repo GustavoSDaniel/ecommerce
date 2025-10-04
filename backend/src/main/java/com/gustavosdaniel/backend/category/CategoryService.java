@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public interface CategoryService {
 
-    CategoryCreatedResponse createdCategory(String name, boolean isActive, MultipartFile imageFile)
+    CategoryCreatedResponse createdCategory(CategoryRequest categoryRequest, MultipartFile imageFile)
             throws ExceptionCategoryNameExists, IOException, ErrorValidateImage;
 
     Page<CategoryCreatedResponse> getAllCategories(Pageable pageable);

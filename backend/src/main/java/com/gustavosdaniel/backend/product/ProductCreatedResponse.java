@@ -14,7 +14,9 @@ public record ProductCreatedResponse(
 
         Integer stock,
 
-        MultipartFile imageName
+        MultipartFile imageName,
+
+        Integer categoryId
 
 
 ) {
