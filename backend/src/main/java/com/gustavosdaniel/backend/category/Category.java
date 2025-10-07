@@ -27,7 +27,7 @@ public class Category {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
     @Column(unique = true, nullable = false)

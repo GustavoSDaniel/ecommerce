@@ -30,7 +30,7 @@ public class Product {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
     @Column(unique = true, nullable = false)
