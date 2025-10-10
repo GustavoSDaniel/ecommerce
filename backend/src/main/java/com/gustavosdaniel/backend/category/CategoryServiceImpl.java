@@ -5,6 +5,8 @@ import com.gustavosdaniel.backend.image.ImageService;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -31,6 +33,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "categories", allEntries = true)
     public CategoryCreatedResponse createdCategory(CategoryRequest categoryRequest, MultipartFile imageFile)
             throws ExceptionCategoryNameExists, IOException, ErrorValidateImage {
 
@@ -61,6 +64,10 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Cacheable(
+            value = "categories",
+            key = "'page:' + #pageable.pageNumber + ':' " +
+                    "+ #pageable.pageSize + ':' + #pageable.sort.toString()")
     public Page<CategoryCreatedResponse> getAllCategories(Pageable pageable) {
 
         Page<Category> allCategorias = categoryRepository.findAll(pageable);
@@ -70,6 +77,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Cacheable(value = "categories", key = "'search:' + #name.toLowerCase()")
     public List<CategorySearchResponse> searchCategoria(String name) {
 
         List<Category> searchCategory = categoryRepository.searchByName(name);
@@ -84,11 +92,12 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "categories", allEntries = true)
     public CategoryUpdateResponse updateCategory(
             String id, CategoryRequest categoryRequest, MultipartFile imageFile)
             throws CategoryNotFoundException, IOException, ErrorValidateImage, ExceptionCategoryNameExists {
 
-        Category existingCategory = categoryRepository.findById(categoryRequest.name())
+        Category existingCategory = categoryRepository.findById(id)
                 .orElseThrow(CategoryNotFoundException::new);
 
         Optional<Category> categoryWhitNewName = categoryRepository.findByName(categoryRequest.name());
@@ -122,6 +131,8 @@ public class CategoryServiceImpl implements CategoryService {
 
 
     @Override
+    @CacheEvict(value = "categories", allEntries = true)
+    @Transactional
     public void deleteCategory(String id) {
 
         Category categoryDeleted = categoryRepository.findById(id)
