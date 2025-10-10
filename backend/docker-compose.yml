@@ -10,7 +10,7 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - KEYCLOAK_ISSUER_URI=http://keycloak:8080/realms/seu-realm
     ports:
-      - "5055:5055"
+      - "5055:8080"
     depends_on:
       - db-ecommerce
       - keycloak
@@ -69,6 +69,18 @@ services:
     volumes:
       - keycloak_data:/var/lib/postgresql/data
     restart: unless-stopped
+    networks:
+      - ecommerce-network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    restart: unless-stopped
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_PASSWORD}
+    ports:
+      - "5050:80"
     networks:
       - ecommerce-network
 
