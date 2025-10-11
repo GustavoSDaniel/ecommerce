@@ -8,9 +8,9 @@ public interface ProductMapper {
 
     Product toProduct(ProductCreatedRequest productCreatedRequest);
 
-    ProductCreatedResponse toProductResponse(Product product);
+    ProductResponse toProductResponse(Product product);
 
-    ProductResponseId toProductResponseId(Product product);
+    ProductResponse toProductResponseId(Product product);
 
 
 }

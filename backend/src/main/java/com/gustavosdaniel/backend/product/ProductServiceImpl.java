@@ -37,8 +37,8 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     @CacheEvict(value = "products", allEntries = true)
-    public ProductCreatedResponse createdProduct(ProductCreatedRequest productCreatedRequest,
-                                                 MultipartFile productImage)
+    public ProductResponse createdProduct(ProductCreatedRequest productCreatedRequest,
+                                          MultipartFile productImage)
             throws ExceptionProductNameExists, IOException, ErrorValidateImage {
 
         if (productRepository.existsByName(productCreatedRequest.name())) {
@@ -77,7 +77,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Cacheable(value = "products", key = "#id")
-    public ProductResponseId findById(String id) {
+    public ProductResponse findById(String id) {
 
         if (id == null || id.isBlank()) {
             throw new IllegalArgumentException("O ID do produto não pode ser vazio");
@@ -87,20 +87,20 @@ public class ProductServiceImpl implements ProductService {
 
         log.info("Produto encontrado: ID={}, Nome={}", id, product.getName());
 
-        return productMapper.toProductResponseId(product);
+        return productMapper.toProductResponse(product);
     }
 
     @Override
     @Cacheable(value = "products-page", key = "#pageable.pageNumber + " +
             "'-' + #pageable.pageSize + '-' + #pageable.sort.hashCode()")
-    public Page<ProductResponseId> findByAllProducts(Pageable pageable) {
+    public Page<ProductResponse> findByAllProducts(Pageable pageable) {
 
         Page<Product> productAll = productRepository.findAll(pageable);
 
         log.debug("Produtos retornados: {} de {} total",
                 productAll.getNumberOfElements(), productAll.getTotalElements());
 
-        return productAll.map(productMapper::toProductResponseId);
+        return productAll.map(productMapper::toProductResponse);
 
     }
 }

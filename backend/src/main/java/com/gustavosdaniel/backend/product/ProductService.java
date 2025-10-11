@@ -9,12 +9,12 @@ import java.io.IOException;
 
 public interface ProductService {
 
-    ProductCreatedResponse createdProduct(
+    ProductResponse createdProduct(
             ProductCreatedRequest productCreatedRequest,
                                           MultipartFile productImage)
             throws ExceptionProductNameExists, IOException, ErrorValidateImage;
 
-    ProductResponseId findById(String id);
+    ProductResponse findById(String id);
 
-    Page<ProductResponseId> findByAllProducts(Pageable pageable);
+    Page<ProductResponse> findByAllProducts(Pageable pageable);
 }

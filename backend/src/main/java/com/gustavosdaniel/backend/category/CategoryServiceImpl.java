@@ -72,6 +72,9 @@ public class CategoryServiceImpl implements CategoryService {
 
         Page<Category> allCategorias = categoryRepository.findAll(pageable);
 
+        log.debug("Categorias retornados: {} de {} total",
+                allCategorias.getNumberOfElements(), allCategorias.getTotalElements());
+
         return allCategorias.map(categoryMapper::toCategoryResponse);
 
     }
@@ -140,7 +143,7 @@ public class CategoryServiceImpl implements CategoryService {
 
         categoryRepository.delete(categoryDeleted);
 
-        log.info("Categoria '{}' deletada com sucesso.", id);
+        log.info("Categoria do ID  '{}', NOME '{}' deletada com sucesso.", id, categoryDeleted.getName());
 
     }
 

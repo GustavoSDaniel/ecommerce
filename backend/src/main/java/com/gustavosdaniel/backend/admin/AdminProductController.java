@@ -3,7 +3,7 @@ package com.gustavosdaniel.backend.admin;
 import com.gustavosdaniel.backend.image.ErrorValidateImage;
 import com.gustavosdaniel.backend.product.ExceptionProductNameExists;
 import com.gustavosdaniel.backend.product.ProductCreatedRequest;
-import com.gustavosdaniel.backend.product.ProductCreatedResponse;
+import com.gustavosdaniel.backend.product.ProductResponse;
 import com.gustavosdaniel.backend.product.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -30,12 +30,12 @@ public class AdminProductController {
 
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @Operation(summary = "Criando Produto")
-    public ResponseEntity<ProductCreatedResponse> createdProduct(
+    public ResponseEntity<ProductResponse> createdProduct(
             @Valid ProductCreatedRequest productCreatedRequest,
             @RequestPart("imageFile") MultipartFile imageFile)
             throws IOException, ExceptionProductNameExists, ErrorValidateImage {
 
-        ProductCreatedResponse productCreatedResponse = productService.
+        ProductResponse productCreatedResponse = productService.
                 createdProduct(productCreatedRequest, imageFile);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(productCreatedResponse);
