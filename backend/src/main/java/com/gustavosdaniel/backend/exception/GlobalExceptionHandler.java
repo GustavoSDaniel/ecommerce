@@ -5,6 +5,7 @@ import com.gustavosdaniel.backend.category.ExceptionCategoryNameExists;
 import com.gustavosdaniel.backend.image.ExceptionErrorUploadImage;
 import com.gustavosdaniel.backend.product.ExceptionProductNameExists;
 import com.gustavosdaniel.backend.product.ProductIdNotFoundException;
+import com.gustavosdaniel.backend.product.ProductNameAlreadyExistsException;
 import com.gustavosdaniel.backend.product.ProductNameNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -109,5 +110,18 @@ public class GlobalExceptionHandler {
                 null);
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+
+    @ExceptionHandler(ProductNameAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleProductNameAlreadyExistsException(
+            ProductNameAlreadyExistsException  exception){
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                "Nome do Produto Já Utilizado",
+                "O nome do produto que voce tentou atualizar já está sendo utilizado",
+                LocalDateTime.now(),
+                null
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
     }
 }

@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,7 +39,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    @CacheEvict(value = "products", allEntries = true)
+    @CacheEvict(value = "products-created", allEntries = true)
     public ProductResponse createdProduct(ProductCreatedRequest productCreatedRequest,
                                           MultipartFile productImage)
             throws ExceptionProductNameExists, IOException, ErrorValidateImage {
@@ -78,7 +79,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    @Cacheable(value = "products", key = "#id")
+    @Cacheable(value = "products-findId", key = "#id")
     public ProductResponse findById(String id) {
 
         if (id == null || id.isBlank()) {
@@ -103,13 +104,13 @@ public class ProductServiceImpl implements ProductService {
                 productAll.getNumberOfElements(), productAll.getTotalElements());
 
         return productAll.map(productMapper::toProductResponse);
-
     }
 
     @Override
+    @Cacheable(value = "products-search", key = "'search:' + #name.toLowerCase()")
     public List<ProductResponse> searchProducts(String name) {
 
-        List<Product> productSearch = productRepository.findByName(name);
+        List<Product> productSearch = productRepository.searchByName(name);
 
         if (productSearch.isEmpty()) {
             throw new ProductNameNotFoundException();
@@ -117,4 +118,86 @@ public class ProductServiceImpl implements ProductService {
 
        return productSearch.stream().map(productMapper::toProductResponse).collect(Collectors.toList());
     }
+
+    @Override
+    @Transactional
+    @CacheEvict(value = {"products", "products-page"}, allEntries = true )
+    public ProductResponse updateProduct(
+            MultipartFile productImage, String id, ProductUpdateRequest productUpdateRequest)
+            throws IOException, ErrorValidateImage, ProductNameAlreadyExistsException {
+
+        Product existsProduct = productRepository.findById(id).
+                orElseThrow(ProductIdNotFoundException::new);
+
+        String imagemAntiga = existsProduct.getImageName();
+        String newImageName = imagemAntiga;
+
+        if (productUpdateRequest.categoryId() != null){
+            Category category = categoryRepository.findById(productUpdateRequest.categoryId())
+                    .orElseThrow(CategoryNotFoundException::new);
+
+            existsProduct.setCategory(category);
+        }
+
+        if (productUpdateRequest.name() != null){
+            Optional<Product> nameDuplicate = productRepository.
+                    findByName(productUpdateRequest.name());
+
+            if (nameDuplicate.isPresent() && !nameDuplicate.get().getId().equals(id)) {
+                throw new ProductNameAlreadyExistsException();
+            }
+
+            existsProduct.setName(productUpdateRequest.name());
+        }
+
+        if (productUpdateRequest.description() != null){
+            existsProduct.setDescription(productUpdateRequest.description());
+        }
+
+        if (productUpdateRequest.price() != null){
+
+            existsProduct.setPrice(productUpdateRequest.price());
+        }
+
+        if (productUpdateRequest.stock() != null){
+            existsProduct.setStock(productUpdateRequest.stock());
+        }
+
+        if (productUpdateRequest.activeOrInactive() != null){
+            existsProduct.setActiveOrInactive(productUpdateRequest.activeOrInactive());
+        }
+
+        if (productImage != null && !productImage.isEmpty()){
+            newImageName = imageService.uploadImage(
+                    productImage, "Product", productUpdateRequest.name() );
+            log.info("Nova imagem carregada para produto {}: {}", id, newImageName);
+            existsProduct.setImageName(newImageName);
+        }
+
+        Product savedProduct = productRepository.save(existsProduct);
+
+        if (newImageName != null && !newImageName.equals(imagemAntiga) && imagemAntiga != null) {
+            imageService.deleteImage(imagemAntiga, "Product");
+        }
+
+        log.info("Produto '{}' atualizado com sucesso", existsProduct.getName());
+
+        return productMapper.toProductResponse(savedProduct);
+    }
+
+    @Override
+    @Transactional
+    @CacheEvict(value = "product-deleted", allEntries = true)
+    public void deleteProduct(String id) {
+
+        Product productDelete = productRepository.findById(id)
+                .orElseThrow(ProductIdNotFoundException::new);
+
+        productRepository.delete(productDelete);
+
+        log.info("Produto do ID  '{}', NOME '{}' deletada com sucesso.", id, productDelete.getName());
+
+    }
+
+
 }

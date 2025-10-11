@@ -20,4 +20,10 @@ public interface ProductService {
     Page<ProductResponse> findByAllProducts(Pageable pageable);
 
     List<ProductResponse> searchProducts(String name);
+
+    ProductResponse updateProduct(
+            MultipartFile productImage, String id, ProductUpdateRequest productUpdateRequest)
+            throws IOException, ErrorValidateImage, ProductNameAlreadyExistsException;
+
+    void deleteProduct(String id);
 }

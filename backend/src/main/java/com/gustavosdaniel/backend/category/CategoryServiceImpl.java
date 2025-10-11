@@ -33,7 +33,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
-    @CacheEvict(value = "categories", allEntries = true)
+    @CacheEvict(value = "categories-created", allEntries = true)
     public CategoryCreatedResponse createdCategory(CategoryRequest categoryRequest, MultipartFile imageFile)
             throws ExceptionCategoryNameExists, IOException, ErrorValidateImage {
 
@@ -65,7 +65,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Cacheable(
-            value = "categories",
+            value = "categories-page",
             key = "'page:' + #pageable.pageNumber + ':' " +
                     "+ #pageable.pageSize + ':' + #pageable.sort.toString()")
     public Page<CategoryCreatedResponse> getAllCategories(Pageable pageable) {
@@ -80,7 +80,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    @Cacheable(value = "categories", key = "'search:' + #name.toLowerCase()")
+    @Cacheable(value = "categories-search", key = "'search:' + #name.toLowerCase()")
     public List<CategorySearchResponse> searchCategoria(String name) {
 
         List<Category> searchCategory = categoryRepository.searchByName(name);
@@ -95,7 +95,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
-    @CacheEvict(value = "categories", allEntries = true)
+    @CacheEvict(value = {"categories-update", "categories-page"}, allEntries = true)
     public CategoryUpdateResponse updateCategory(
             String id, CategoryRequest categoryRequest, MultipartFile imageFile)
             throws CategoryNotFoundException, IOException, ErrorValidateImage, ExceptionCategoryNameExists {
@@ -121,20 +121,20 @@ public class CategoryServiceImpl implements CategoryService {
         existingCategory.setImageName(newImage);
         existingCategory.setIsActive(categoryRequest.isActive());
 
-        Category updatedCategory = categoryRepository.save(existingCategory);
-
-        log.info("Categoria {} atualizada com sucesso", updatedCategory.getName());
+        Category savedCategory = categoryRepository.save(existingCategory);
 
         if (newImage != null && !newImage.equals(imagemAntiga) && imagemAntiga != null) {
             imageService.deleteImage(imagemAntiga, "Categories");
         }
 
-        return categoryMapper.toCategoryUpdateResponse(updatedCategory);
+        log.info("Categoria {} atualizada com sucesso", existingCategory.getName());
+
+        return categoryMapper.toCategoryUpdateResponse(savedCategory);
     }
 
 
     @Override
-    @CacheEvict(value = "categories", allEntries = true)
+    @CacheEvict(value = "categories-deleted", allEntries = true)
     @Transactional
     public void deleteCategory(String id) {
 
