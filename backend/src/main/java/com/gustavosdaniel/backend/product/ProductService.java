@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 public interface ProductService {
 
@@ -17,4 +18,6 @@ public interface ProductService {
     ProductResponse findById(String id);
 
     Page<ProductResponse> findByAllProducts(Pageable pageable);
+
+    List<ProductResponse> searchProducts(String name);
 }

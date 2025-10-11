@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -102,5 +104,17 @@ public class ProductServiceImpl implements ProductService {
 
         return productAll.map(productMapper::toProductResponse);
 
+    }
+
+    @Override
+    public List<ProductResponse> searchProducts(String name) {
+
+        List<Product> productSearch = productRepository.findByName(name);
+
+        if (productSearch.isEmpty()) {
+            throw new ProductNameNotFoundException();
+        }
+
+       return productSearch.stream().map(productMapper::toProductResponse).collect(Collectors.toList());
     }
 }
