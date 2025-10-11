@@ -10,5 +10,7 @@ public interface ProductMapper {
 
     ProductCreatedResponse toProductResponse(Product product);
 
+    ProductResponseId toProductResponseId(Product product);
+
 
 }

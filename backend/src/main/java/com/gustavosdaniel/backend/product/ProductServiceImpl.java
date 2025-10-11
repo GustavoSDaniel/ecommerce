@@ -8,6 +8,10 @@ import com.gustavosdaniel.backend.image.ImageService;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,6 +36,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "products", allEntries = true)
     public ProductCreatedResponse createdProduct(ProductCreatedRequest productCreatedRequest,
                                                  MultipartFile productImage)
             throws ExceptionProductNameExists, IOException, ErrorValidateImage {
@@ -67,6 +72,35 @@ public class ProductServiceImpl implements ProductService {
         log.info("Produto criado com sucesso: {}", newProduct);
 
         return productMapper.toProductResponse(salvedProduct);
+
+    }
+
+    @Override
+    @Cacheable(value = "products", key = "#id")
+    public ProductResponseId findById(String id) {
+
+        if (id == null || id.isBlank()) {
+            throw new IllegalArgumentException("O ID do produto não pode ser vazio");
+        }
+
+        Product product = productRepository.findById(id).orElseThrow(ProductIdNotFoundException::new);
+
+        log.info("Produto encontrado: ID={}, Nome={}", id, product.getName());
+
+        return productMapper.toProductResponseId(product);
+    }
+
+    @Override
+    @Cacheable(value = "products-page", key = "#pageable.pageNumber + " +
+            "'-' + #pageable.pageSize + '-' + #pageable.sort.hashCode()")
+    public Page<ProductResponseId> findByAllProducts(Pageable pageable) {
+
+        Page<Product> productAll = productRepository.findAll(pageable);
+
+        log.debug("Produtos retornados: {} de {} total",
+                productAll.getNumberOfElements(), productAll.getTotalElements());
+
+        return productAll.map(productMapper::toProductResponseId);
 
     }
 }

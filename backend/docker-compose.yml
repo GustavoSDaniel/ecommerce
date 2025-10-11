@@ -98,8 +98,8 @@ services:
       - ecommerce-network
 
   redis-commander:
-    image: rediscommander/redis-commander:latest
-    container_name: redis-commander
+    image: redis/redisinsight:2.70.1-arm64
+    container_name: redis-redisinsight
     restart: always
     environment:
       - REDIS_HOSTS=local:redis:6379

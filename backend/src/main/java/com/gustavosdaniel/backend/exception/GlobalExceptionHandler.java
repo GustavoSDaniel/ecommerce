@@ -4,6 +4,7 @@ import com.gustavosdaniel.backend.category.CategoryNotFoundException;
 import com.gustavosdaniel.backend.category.ExceptionCategoryNameExists;
 import com.gustavosdaniel.backend.image.ExceptionErrorUploadImage;
 import com.gustavosdaniel.backend.product.ExceptionProductNameExists;
+import com.gustavosdaniel.backend.product.ProductIdNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -85,5 +86,15 @@ public class GlobalExceptionHandler {
                 null);
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+    }
+
+    @ExceptionHandler(ProductIdNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleProductIdNotFoundException(
+            ProductIdNotFoundException  exception) {
+        ErrorResponse errorResponse = new ErrorResponse("Produto com ID não encontrado",
+                "Produto com o ID inserido não encontrado",
+                LocalDateTime.now(),
+                null);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 }
