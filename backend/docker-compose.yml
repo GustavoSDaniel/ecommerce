@@ -9,6 +9,7 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - KEYCLOAK_ISSUER_URI=http://keycloak:8080/realms/seu-realm
+      - SPRING_PROFILES_ACTIVE=local
     ports:
       - "5055:8080"
     depends_on:
