@@ -3,6 +3,7 @@ package com.gustavosdaniel.backend.product;
 import com.gustavosdaniel.backend.category.Category;
 import com.gustavosdaniel.backend.category.CategoryNotFoundException;
 import com.gustavosdaniel.backend.category.CategoryRepository;
+import com.gustavosdaniel.backend.commun.ActiveOrInactive;
 import com.gustavosdaniel.backend.image.ErrorValidateImage;
 import com.gustavosdaniel.backend.image.ImageService;
 import jakarta.transaction.Transactional;
@@ -16,9 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -105,6 +104,17 @@ public class ProductServiceImpl implements ProductService {
 
         return productAll.map(productMapper::toProductResponse);
     }
+
+    @Override
+    @Cacheable(value = "products-ativo", key = "#pageable.pageNumber + " +
+            "'-' + #pageable.pageSize + '-' + #pageable.sort.hashCode()")
+    public Page<ProductResponse> findByAllProductsActive(Pageable pageable) {
+        Page<Product> productsAtivo = productRepository.
+                findByActiveOrInactive(ActiveOrInactive.ACTIVE, pageable);
+
+        return productsAtivo.map(productMapper::toProductResponse);
+    }
+
 
     @Override
     @Cacheable(

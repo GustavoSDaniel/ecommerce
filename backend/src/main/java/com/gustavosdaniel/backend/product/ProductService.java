@@ -1,5 +1,6 @@
 package com.gustavosdaniel.backend.product;
 
+import com.gustavosdaniel.backend.commun.ActiveOrInactive;
 import com.gustavosdaniel.backend.image.ErrorValidateImage;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +19,8 @@ public interface ProductService {
     ProductResponse findById(String id);
 
     Page<ProductResponse> findByAllProducts(Pageable pageable);
+
+    Page<ProductResponse> findByAllProductsActive(Pageable pageable);
 
     Page<ProductResponse> searchProducts(Pageable pageable, String name);
 

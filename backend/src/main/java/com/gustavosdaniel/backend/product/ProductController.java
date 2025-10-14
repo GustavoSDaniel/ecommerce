@@ -42,6 +42,19 @@ public class ProductController {
 
     }
 
+    @GetMapping("/productsActive")
+    @Validated
+    @Operation(summary = "Mostrar apenas Produtos ativos")
+    public ResponseEntity<Page<ProductResponse>> getAllProductsActive(
+            @RequestParam(defaultValue = "1") @Min(1) int page,
+            @RequestParam(defaultValue = "20") int size) {
+
+        Pageable pageable = PageRequest.of(page -1, size);
+        Page<ProductResponse> productsActive = productService.findByAllProductsActive(pageable);
+        return ResponseEntity.ok(productsActive);
+
+    }
+
     @GetMapping("/search")
     @Validated
     @Operation(summary = "Pesquisando Produtos pelo nome")
