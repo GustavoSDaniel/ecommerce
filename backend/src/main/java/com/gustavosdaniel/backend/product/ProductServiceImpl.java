@@ -107,16 +107,20 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    @Cacheable(value = "products-search", key = "'search:' + #name.toLowerCase()")
-    public List<ProductResponse> searchProducts(String name) {
+    @Cacheable(
+            value = "products-search",
+            key = "'search:' + #name.toLowerCase() + ':page:' + #pageable.pageNumber + " +
+                    "':size:' + #pageable.pageSize + ':sort:' + #pageable.sort.toString()"
+    )
+    public Page<ProductResponse> searchProducts(Pageable pageable,String name) {
 
-        List<Product> productSearch = productRepository.searchByName(name);
+        Page<Product> productSearch = productRepository.searchByName(pageable,name);
 
         if (productSearch.isEmpty()) {
             throw new ProductNameNotFoundException();
         }
 
-       return productSearch.stream().map(productMapper::toProductResponse).collect(Collectors.toList());
+       return productSearch.map(productMapper::toProductResponse);
     }
 
     @Override

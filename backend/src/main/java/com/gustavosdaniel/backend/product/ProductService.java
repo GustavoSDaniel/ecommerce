@@ -19,7 +19,7 @@ public interface ProductService {
 
     Page<ProductResponse> findByAllProducts(Pageable pageable);
 
-    List<ProductResponse> searchProducts(String name);
+    Page<ProductResponse> searchProducts(Pageable pageable, String name);
 
     ProductResponse updateProduct(
             MultipartFile productImage, String id, ProductUpdateRequest productUpdateRequest)
