@@ -40,7 +40,7 @@ spring:
       resource server:
         jwt:
           # !! IMPORTANTE: Lembre-se de substituir 'seu-realm' pelo nome do seu realm no Keycloak !!
-          issuer-uri: http://keycloak:8080/realms/seu-realm
+          issuer-uri: http://keycloak:8080/realms/${REALM_KEYCLOAK}
   jackson:
     time-zone: America/Sao_Paulo
 
